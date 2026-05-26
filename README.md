@@ -32,6 +32,46 @@ sh test.sh
 python test.py --dataset Synapse --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --is_saveni --volume_path your DATA_DIR --output_dir your OUT_DIR --max_epoch 150 --base_lr 0.05 --img_size 224 --batch_size 24
 ```
 
+## 5. OCT PNG dataset (2D B-scan, 8 layers + background)
+
+- Data layout:
+  - `data/OCTLayers/image/*.png`
+  - `data/OCTLayers/masks/*.png`
+  - `lists/OCTLayers/{train,val,test}.txt` (one filename stem per line, no `.png`)
+- Label handling in `datasets/dataset_oct_png.py`:
+  - `0` and `9` are mapped to background `0`
+  - valid classes are `1..8`
+  - invalid values are mapped to `0` to avoid label out-of-range errors
+
+- Train:
+
+```bash
+python train_oct_png.py \
+  --cfg configs/swin_tiny_patch4_window7_224_lite.yaml \
+  --root_path ./data/OCTLayers \
+  --list_dir ./lists/OCTLayers \
+  --num_classes 9 \
+  --img_size 224 \
+  --batch_size 12 \
+  --max_epochs 150 \
+  --base_lr 0.05 \
+  --output_dir ./model_out/OCTLayers_swinunet_png
+```
+
+- Test:
+
+```bash
+python test_oct_png.py \
+  --cfg configs/swin_tiny_patch4_window7_224_lite.yaml \
+  --root_path ./data/OCTLayers \
+  --list_dir ./lists/OCTLayers \
+  --split_name test \
+  --num_classes 9 \
+  --img_size 224 \
+  --output_dir ./model_out/OCTLayers_swinunet_png \
+  --is_savenii
+```
+
 ## Reproducibility
 
 
