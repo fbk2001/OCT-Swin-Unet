@@ -60,10 +60,7 @@ parser.add_argument("--split_name", default="test", help="list split name")
 parser.add_argument("--num_workers", default=1, type=int)
 
 args = parser.parse_args()
-if args.n_class != args.num_classes:
-    args.n_class = args.num_classes
-else:
-    args.num_classes = args.n_class
+args.n_class = args.num_classes
 config = get_config(args)
 
 

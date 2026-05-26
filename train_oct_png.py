@@ -59,10 +59,7 @@ parser.add_argument("--num_workers", default=8, type=int)
 parser.add_argument("--eval_interval", default=1, type=int)
 
 args = parser.parse_args()
-if args.n_class != args.num_classes:
-    args.n_class = args.num_classes
-else:
-    args.num_classes = args.n_class
+args.n_class = args.num_classes
 config = get_config(args)
 
 if __name__ == "__main__":

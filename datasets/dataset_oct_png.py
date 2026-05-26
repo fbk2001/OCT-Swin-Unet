@@ -8,6 +8,8 @@ from scipy import ndimage
 from scipy.ndimage.interpolation import zoom
 from torch.utils.data import Dataset
 
+BACKGROUND_MIXED_LABEL = 9
+
 
 def random_rot_flip(image, label):
     k = np.random.randint(0, 4)
@@ -31,7 +33,7 @@ def apply_label_map(label, label_map=None, max_valid_label=8):
     if label_map:
         for src, dst in label_map.items():
             mapped[mapped == int(src)] = int(dst)
-    mapped[mapped == 9] = 0
+    mapped[mapped == BACKGROUND_MIXED_LABEL] = 0
     mapped[(mapped < 0) | (mapped > max_valid_label)] = 0
     return mapped
 
@@ -45,9 +47,10 @@ class RandomGenerator(object):
         image, label = sample['image'], sample['label']
 
         if self.augment:
-            if random.random() > 0.5:
+            aug_prob = random.random()
+            if aug_prob > 0.5:
                 image, label = random_rot_flip(image, label)
-            elif random.random() > 0.5:
+            elif aug_prob > 0.25:
                 image, label = random_rotate(image, label)
 
         x, y = image.shape
@@ -91,7 +94,7 @@ class OCT_PNG_dataset(Dataset):
 
         sample = {'image': image, 'label': label, 'case_name': case_stem}
         if self.transform:
-            transformed = self.transform({'image': image, 'label': label})
+            transformed = self.transform(sample)
             transformed['case_name'] = case_stem
             sample = transformed
         return sample

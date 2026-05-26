@@ -53,7 +53,7 @@ def trainer_oct_png(args, model, snapshot_path):
     max_iterations = args.max_epochs * len(train_loader)
     logging.info("{} iterations per epoch. {} max iterations ".format(len(train_loader), max_iterations))
     iterator = tqdm(range(max_epoch), ncols=70)
-    best_loss = 10e10
+    best_loss = float('inf')
     for epoch_num in iterator:
         model.train()
         batch_dice_loss = 0
@@ -114,13 +114,13 @@ def trainer_oct_png(args, model, snapshot_path):
                 logging.info('Val epoch: %d : loss : %f, loss_ce: %f, loss_dice: %f' % (
                     epoch_num, batch_loss, batch_ce_loss, batch_dice_loss))
                 if batch_loss < best_loss:
-                    save_mode_path = os.path.join(snapshot_path, 'best_model.pth')
-                    torch.save(model.state_dict(), save_mode_path)
+                    save_model_path = os.path.join(snapshot_path, 'best_model.pth')
+                    torch.save(model.state_dict(), save_model_path)
                     best_loss = batch_loss
                 else:
-                    save_mode_path = os.path.join(snapshot_path, 'last_model.pth')
-                    torch.save(model.state_dict(), save_mode_path)
-                logging.info("save model to {}".format(save_mode_path))
+                    save_model_path = os.path.join(snapshot_path, 'last_model.pth')
+                    torch.save(model.state_dict(), save_model_path)
+                logging.info("save model to {}".format(save_model_path))
 
     writer.close()
     return "Training Finished!"
